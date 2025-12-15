@@ -18,12 +18,17 @@ if (!string.IsNullOrEmpty(databaseUrl))
     var builderDb = new NpgsqlConnectionStringBuilder
     {
         Host = databaseUri.Host,
-        Port = databaseUri.Port,
         Username = userInfo[0],
         Password = userInfo[1],
         Database = databaseUri.LocalPath.TrimStart('/'),
-        SslMode = SslMode.Require
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true // Helpful for some Render internal connections, though Require is robust
     };
+    
+    if (databaseUri.Port > 0)
+    {
+        builderDb.Port = databaseUri.Port;
+    }
     connectionString = builderDb.ToString();
 }
 else
